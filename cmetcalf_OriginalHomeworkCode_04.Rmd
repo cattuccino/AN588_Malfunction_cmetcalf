@@ -44,6 +44,39 @@ z.prop.test <- function (p1, n1, p2, n2) {
 }
 ```
 
+```{r}
+z.prop.test <- function(x,n,p=NULL,conf.level=0.95,alternative= c("two.sided", "less", "greater")) {
+   Z <- NULL
+   CI <- NULL
+   p <- NULL
+      x <- cbind(p1, p2 = NULL)
+      n <- cbind(n1, n2= NULL)
+      pstar <- (sum(p1) + sum(p2))/(length(p1) + length(p2)) #pooled proportion
+      phat1 <- mean(p1) #proportion of successes in sample group p1
+      phat2 <- mean(p2) #proportion of successes in sample group p2
+      pi <- 0 #expected difference in proportions between sample groups (set to zero)
+      z <- (phat2 - phat1)/sqrt((pstar * (1 - pstar)) * (1/length(n1) + 1/length(n2))) #formula for two sample z-test
+      if(length(n1) > 0) {
+         if(alternative=="two.sided") {
+            p <- 1 - pnorm(z, lower.tail = TRUE) + pnorm(z, lower.tail = FALSE)
+         }
+         if(alternative=="greater") {
+            p <- 1 - pnorm(z, lower.tail = TRUE)
+         }
+         if(alternative="less") {
+           p <- pnorm(z, lower.tail = FALSE)
+         }
+      } else {
+     crit <- qnorm(1 - alpha/2)  # identify critical values
+     test <- p < -crit || p > crit  # boolean test
+      }
+      CI <- phat + c( 
+         -1*((qnorm(((1 - conf.level)/2) + conf.level))*SE.phat),
+         ((qnorm(((1 - conf.level)/2) + conf.level))*SE.phat) )
+   return(list(estimate=phat,ts.z=ts.z,p.val=p.val,cint=cint))
+}
+```
+I used a one sample z.test created by someone as a template to work with forming my own function for this assignment since I struggled a lot with finding the correct syntax to use that was also easy to understand. It is found here: https://qualityandinnovation.com/2015/03/16/one-proportion-z-test-in-r/ .
 # Question 2
 
 The dataset from Kamilar and Cooper has in it a large number of variables related to life history and body size. For this exercise, the end aim is to fit a simple linear regression model to predict longevity (MaxLongevity_m) measured in months from species’ brain size (Brain_Size_Species_Mean) measured in grams. Do the following for both longevity~brain size and log(longevity)~log(brain size):
