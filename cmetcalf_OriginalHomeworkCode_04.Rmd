@@ -107,36 +107,37 @@ head(d)
 Next load in ggplot and manipulate:
 ```{r}
 library(ggplot2)
+library(ggpmisc)
 library(manipulate)
 ```
 
 Using an example from Module 12 we can find a line of best fit for a regression model:
 
 ```{r}
-model <- function(d) {
-  lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data=d)
-}
-model(d) #finds linear regression line of best fit, as well as the intercep tbeing beta0 and the remaining coefficient is beta1
+model <- lm(MaxLongevity_m ~ Brain_Size_Species_Mean, data=d)
+model #finds linear regression line of best fit, as well as the intercep tbeing beta0 and the remaining coefficient is beta1
 ```
 ```{r}
 g <- ggplot(data = d, aes(x = MaxLongevity_m, y = Brain_Size_Species_Mean))
 g <- g + geom_point()
 g <- g + geom_smooth(method = "lm", formula = y ~ x)
-g <- g + geom_text(data = d, aes(label = "model(d)", stat = "equation", position = "left", parse = TRUE))
+g <- g + stat_poly_line(formula = model)
+g <- g + stat_poly_eq(mapping = aes(label = after_stat(eq.label)), formula = model)
 g #plots points with line of best fit
 ```
 I can not seem to find a way to make it display an equation when i try to insert it and it just seems to label each point? Any suggestions are helpful.
 
 ```{r}
-ci <- confint(model(d), level = 0.90)  # using the results of lm()
+ci <- confint(model, level = 0.90)  # using the results of lm()
 ci
 ```
 
-```{r}
+<
 model2 <- lm(data = d, MaxLongevity_m ~ Brain_Size_Species_Mean)
-h_hat <- predict(model2, newdata = data.frame(weight = d$Brain_Size_Species_Mean))
+h_hat <- predict(model2, newdata = data.frame(mean = d$Brain_Size_Species_Mean))
 df <- data.frame(cbind(d$Brain_Size_Species_Mean, d$MaxLongevity_m, h_hat))
 names(df) <- c("x", "y", "yhat")
 head(df)
-```
-This was me messing with the predict example from later in the module, but it keeps giving me error messages :( 
+<
+
+This was me messing with the predict example from later in the module, but it keeps giving me error messages, so I just left it here for later :( 
