@@ -127,6 +127,8 @@ g #plots points with line of best fit
 ```
 I can not seem to find a way to make it display an equation when i try to insert it and it just seems to label each point? Any suggestions are helpful.
 
+##COMMENT: To display the function I used g <- g + geom_smooth(method = "lm", formula = y ~ x) + stat_regline_equation(label.x=30, label.y=310) + stat_cor(aes(label=..rr.label..), label.x=30, label.y=290) with the package ggpubr. The firss "label" denotes where on the graph you want your equation to be located, change as necessary. The second half gives you the R^2 value of the regression model, again, using the label function to place it as you like on the graph. This part isn't strictly necessary, but I found it on the same website and might be good to keep in your repetoir :)
+
 ```{r}
 ci <- confint(model, level = 0.90)  # using the results of lm()
 ci
